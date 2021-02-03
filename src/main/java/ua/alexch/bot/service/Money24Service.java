@@ -16,8 +16,8 @@ import ua.alexch.bot.model.ExchangeRate;
 import ua.alexch.bot.util.TgUtil;
 
 @Service
-public class Money24Source implements SearchSource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(Money24Source.class);
+public class Money24Service implements SearchSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Money24Service.class);
     private static final String RATE_INFO = "tabs-1";
     private static final String RATE_DETAILS = "rate-number";
     private static final String CURRENCY_STR = "%s%s-uah";

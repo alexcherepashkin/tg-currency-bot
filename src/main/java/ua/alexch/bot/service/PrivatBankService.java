@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,8 +20,8 @@ import ua.alexch.bot.model.ExchangeRate;
 import ua.alexch.bot.util.TgUtil;
 
 @Service
-public class PrivatBankSource implements SearchSource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PrivatBankSource.class);
+public class PrivatBankService implements SearchSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PrivatBankService.class);
     private static final String RUB_CODE = "RUR";
     private static final String CURR_FIELD_CODE = "ccy";
 
@@ -30,20 +31,16 @@ public class PrivatBankSource implements SearchSource {
     private String url;
 
     @Autowired
-    public PrivatBankSource(RestTemplateBuilder templateBuilder) {
-        this.restTemplate = templateBuilder.build();
+    public PrivatBankService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override
     public Optional<ExchangeRate> getCurrencyRateData(String currency) {
-        String json = restTemplate.getForObject(url, String.class);
-
-        return retrieveData(json, currency);
-    }
-
-    private Optional<ExchangeRate> retrieveData(String json, String currency) {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY, true);
+
+        String json = retrieveData(url);
 
         ExchangeRate result = null;
         try {
@@ -58,10 +55,16 @@ public class PrivatBankSource implements SearchSource {
                 }
             }
         } catch (JsonProcessingException e) {
-            LOGGER.error("Failed to retrieve data from request: " + url, e);
+            LOGGER.error("Failed to deserialize content from given JSON string: " + json, e);
         }
 
         return Optional.ofNullable(result);
+    }
+
+    private String retrieveData(String url) {
+//        return restTemplate.getForObject(url, String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        return response.getStatusCode() == HttpStatus.OK ? response.getBody() : "";
     }
 
     @Override

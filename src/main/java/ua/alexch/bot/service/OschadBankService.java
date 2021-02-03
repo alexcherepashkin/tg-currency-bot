@@ -15,8 +15,8 @@ import ua.alexch.bot.model.ExchangeRate;
 import ua.alexch.bot.util.TgUtil;
 
 @Service
-public class OschadBankSource implements SearchSource {
-    private static final Logger LOGGER = LoggerFactory.getLogger(OschadBankSource.class);
+public class OschadBankService implements SearchSource {
+    private static final Logger LOGGER = LoggerFactory.getLogger(OschadBankService.class);
     private static final String BUY_CURR = "buy-%s";
     private static final String SELL_CURR = "sell-%s";
 

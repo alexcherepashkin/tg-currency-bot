@@ -37,6 +37,9 @@ public class OutputHandler implements Handler {
     @Override
     public List<PartialBotApiMethod<? extends Serializable>> handle(TgUser user, String selectedSrc) {
         final String selectedCurrency = tempStorage.getCurrency(user.getUserId());
+        if (selectedCurrency == null) {
+            return Collections.emptyList();
+        }
 
         Optional<ExchangeRate> rateData = getServiceBySource(selectedSrc).getCurrencyRateData(selectedCurrency);
 
